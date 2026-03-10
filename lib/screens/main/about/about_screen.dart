@@ -2,9 +2,29 @@ import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/widgets/app_icon.dart';
 import 'package:artha_pro_app/core/widgets/app_top_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-class AboutScreen extends StatelessWidget {
+class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
+
+  @override
+  State<AboutScreen> createState() => _AboutScreenState();
+}
+
+class _AboutScreenState extends State<AboutScreen> {
+  String appVersion = '';
+  @override
+  void initState() {
+    super.initState();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      appVersion = 'Version ${info.version}';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +42,9 @@ class AboutScreen extends StatelessWidget {
                 boxShadow: [BoxShadow(color: Colors.black54, blurRadius: 20)],
               ),
               width: double.infinity,
-              padding:const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             ),
-             SizedBox(
+            SizedBox(
               height: 350,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -41,7 +61,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Version 1.0.1',
+                   appVersion,
                     style: TextStyle(
                       color: AppColors.slateLight,
                       fontFamily: 'Manrope',
@@ -54,8 +74,8 @@ class AboutScreen extends StatelessWidget {
             ),
 
             Container(
-              padding:const EdgeInsets.all(20),
-              margin:const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(20),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.onPrimary,
                 borderRadius: BorderRadius.circular(20),
@@ -63,7 +83,9 @@ class AboutScreen extends StatelessWidget {
                   color: AppColors.secondaryLightText.withAlpha(70),
                   width: 2,
                 ),
-                boxShadow:const [BoxShadow(color: Colors.black12, blurRadius: 15)],
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 15),
+                ],
               ),
               child: Column(
                 spacing: 10,
@@ -78,7 +100,7 @@ class AboutScreen extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                 const Text(
+                  const Text(
                     'Empowering everyone with premium financial tools for a smarter future. ArthaPro is built to simplify your financial journey with institutional-grade insights and secure management.',
                     style: TextStyle(
                       color: AppColors.slateLight,
@@ -90,14 +112,14 @@ class AboutScreen extends StatelessWidget {
                 ],
               ),
             ),
-          const  SizedBox(height: 15),
+            const SizedBox(height: 15),
             _MenuItem(
               prefixIcon: Icons.support_agent_rounded,
               lable: 'Contact Support',
             ),
-           const SizedBox(height: 15),
+            const SizedBox(height: 15),
             _MenuItem(prefixIcon: Icons.star_rate_rounded, lable: 'Rate Us'),
-           const SizedBox(height: 15),
+            const SizedBox(height: 15),
           ],
         ),
       ),
@@ -113,8 +135,8 @@ class _MenuItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      margin:const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onPrimary,
         borderRadius: BorderRadius.circular(20),
