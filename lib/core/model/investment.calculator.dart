@@ -19,6 +19,9 @@ class InvestmentCalculator {
     required double amount,
     required double annualRate,
     required double years,
+    double? withdrawal,
+    double? contributeToEpe,
+    double? annualIncreaseSalary,
   }) {
     double futureValue = 0;
     double invested = 0;
@@ -65,7 +68,73 @@ class InvestmentCalculator {
         futureValue = balance;
         invested = amount * years;
         break;
+      case InvestmentType.swp:
+        double principal = amount;
+        double annualRate = rate;
+        double timeInYears = years;
+        double monthlyWithdrawal = withdrawal ?? 0;
+
+        int compoundingFrequency = 12;
+        double monthlyRate = annualRate / compoundingFrequency;
+
+        int totalMonths = (compoundingFrequency * timeInYears).toInt();
+
+        double compoundFactor = pow(1 + monthlyRate, totalMonths).toDouble();
+
+        double futureValue =
+            (principal * compoundFactor) -
+            (monthlyWithdrawal *
+                (1 + monthlyRate) *
+                ((compoundFactor - 1) / monthlyRate));
+        double totalWithdrawn = monthlyWithdrawal * totalMonths;
+
+        return InvestmentResult(
+          totalInvested: principal,
+          maturityValue: futureValue,
+          estimatedReturns: totalWithdrawn,
+        );
+      case InvestmentType.epf:
+        double monthlySalary = amount;
+        double employeeContributionPercent = (contributeToEpe ?? 0) / 100;
+        double annualInterestRate = annualRate / 100;
+        double monthlyInterestRate = annualInterestRate / 12;
+        double annualSalaryGrowth = (annualIncreaseSalary ?? 0) / 100;
+        int currentAge = years.toInt();
+        int retirementAge = 58;
+        int remainingYears = retirementAge - currentAge;
+        int totalMonths = remainingYears * 12;
+
+        double epfBalance = 0;
+        const double epsSalaryCap = 15000;
+
+        double epsRate = 1 / 12;
+        const double employerTotalRate = 0.12;
+
+        for (int month = 1; month <= totalMonths; month++) {
+          epfBalance = epfBalance * (1 + monthlyInterestRate);
+          double employeeEpf = monthlySalary * employeeContributionPercent;
+
+          double salaryForEps = monthlySalary > epsSalaryCap
+              ? epsSalaryCap
+              : monthlySalary;
+          double epsContribution = salaryForEps * epsRate;
+
+          double employerEpf =
+              (monthlySalary * employerTotalRate) - epsContribution;
+          double monthlyEpfContribution = employeeEpf + employerEpf;
+          epfBalance += monthlyEpfContribution;
+
+          if (month % 12 == 0) {
+            monthlySalary = monthlySalary * (1 + annualSalaryGrowth);
+          }
+        }
+        return InvestmentResult(
+          totalInvested: epfBalance,
+          estimatedReturns: 0,
+          maturityValue: 0,
+        );
     }
+
     return InvestmentResult(
       totalInvested: invested,
       maturityValue: futureValue,

@@ -1,3 +1,4 @@
+import 'package:artha_pro_app/core/ads/banner_ad.dart';
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/model/tools_data.dart';
 import 'package:artha_pro_app/core/utils/tax_type.dart';
@@ -73,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const AppTopBar(),
       body: SingleChildScrollView(
         child: Column(
@@ -88,12 +89,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               // height: 200,
               width: double.infinity,
-              padding:const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: const HomeTopCard(),
             ),
 
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(right: 20, left: 20, top: 20),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   border: Border(
@@ -120,9 +121,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-
+            SizedBox(
+              //  height: 60,
+              height: MediaQuery.of(context).size.width * 0.25,
+              child: BannerAdSection(),
+            ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               child: Wrap(
                 spacing: 16,
                 runSpacing: 16,
@@ -233,10 +238,10 @@ class _ToolsItem extends StatelessWidget {
           color: Theme.of(context).colorScheme.onPrimary,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-              color: Theme.of(context).colorScheme.onSecondary.withAlpha(70),
+            color: Theme.of(context).colorScheme.onSecondary.withAlpha(70),
             width: 2,
           ),
-          boxShadow:const [BoxShadow(color: Colors.black12, blurRadius: 15)],
+          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 15)],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

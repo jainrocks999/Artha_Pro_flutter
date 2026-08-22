@@ -1,0 +1,95 @@
+import 'dart:io';
+
+import 'package:artha_pro_app/core/constants/ads_unit_key.dart';
+import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+class BannerAdSection extends StatefulWidget {
+  const BannerAdSection({super.key});
+
+  @override
+  State<BannerAdSection> createState() => _BannerAdSectionState();
+}
+
+class _BannerAdSectionState extends State<BannerAdSection> {
+  BannerAd? _bannerAd;
+  bool _isLoaded = false;
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadBannerAd(double width) async {
+    if (_bannerAd != null) return;
+    final adSize =
+        await AdSize.getLargeAnchoredAdaptiveBannerAdSizeWithOrientation(
+          Orientation.portrait,
+          width.truncate(),
+        );
+
+    if (adSize == null) {
+      debugPrint('Failed to get adaptive banner size');
+      return;
+    }
+
+    final banner = BannerAd(
+      adUnitId: Platform.isIOS
+          ? AdsUnitKey.bannerAdIdTest
+          : AdsUnitKey.bannerAdId,
+      size: adSize,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          if (!mounted) return;
+
+          setState(() {
+            _bannerAd = ad as BannerAd;
+            _isLoaded = true;
+          });
+
+          debugPrint('Banner loaded: ${adSize.width}x${adSize.height}');
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+
+          debugPrint('Banner ad failed: $error');
+        },
+      ),
+    );
+
+    await banner.load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+
+        if (width <= 0) {
+          return const SizedBox.shrink();
+        }
+
+        if (_bannerAd == null && !_isLoaded) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _loadBannerAd(width);
+            }
+          });
+        }
+
+        if (!_isLoaded || _bannerAd == null) {
+          return const SizedBox.shrink();
+        }
+
+        return SizedBox(
+          width: width,
+          height: _bannerAd!.size.height.toDouble(),
+          child: AdWidget(ad: _bannerAd!),
+        );
+      },
+    );
+  }
+}

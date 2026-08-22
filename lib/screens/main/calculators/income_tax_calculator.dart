@@ -1,3 +1,5 @@
+import 'package:artha_pro_app/core/ads/banner_ad.dart';
+import 'package:artha_pro_app/core/ads/intrestitail_ad_service.dart';
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/model/income_tax_calculator.dart';
 import 'package:artha_pro_app/core/utils/helper.dart';
@@ -78,9 +80,13 @@ class _IncomeTaxCalculatorscreenState extends State<IncomeTaxCalculatorscreen> {
   final hraReceivedController = TextEditingController();
   final annualRentController = TextEditingController();
 
+  final IntrestitailAdService _intrestitailAdService = IntrestitailAdService();
+
   @override
   void initState() {
     super.initState();
+
+    _intrestitailAdService.loadAd();
 
     final controllers = [
       grossSalaryController,
@@ -99,6 +105,14 @@ class _IncomeTaxCalculatorscreenState extends State<IncomeTaxCalculatorscreen> {
       hraReceivedController,
       annualRentController,
     ];
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _intrestitailAdService.showAd(
+        onAdDismissed: () {
+          if (!mounted) return;
+        },
+      );
+    });
 
     for (var controller in controllers) {
       controller.text = "0";
@@ -107,6 +121,7 @@ class _IncomeTaxCalculatorscreenState extends State<IncomeTaxCalculatorscreen> {
 
   @override
   void dispose() {
+    _intrestitailAdService.dispose();
     grossSalaryController.dispose();
     otherIncomeController.dispose();
     interestIncomeController.dispose();
@@ -436,6 +451,10 @@ class _IncomeTaxCalculatorscreenState extends State<IncomeTaxCalculatorscreen> {
                 FocusScope.of(context).unfocus();
                 _calculate();
               },
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.width * 0.16,
+              child: BannerAdSection(),
             ),
             showSummary
                 ? ClipRRect(

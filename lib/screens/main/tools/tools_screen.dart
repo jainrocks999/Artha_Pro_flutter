@@ -1,3 +1,4 @@
+import 'package:artha_pro_app/core/ads/banner_ad.dart';
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/model/tools_data.dart';
 import 'package:artha_pro_app/core/utils/intestment_type.dart';
@@ -83,7 +84,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
                 borderRadius: BorderRadius.vertical(
                   bottom: Radius.circular(20),
                 ),
-                boxShadow:[BoxShadow(color: Colors.black54, blurRadius: 20)],
+                boxShadow: [BoxShadow(color: Colors.black54, blurRadius: 20)],
               ),
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -105,7 +106,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
                     onChanged: (value) {
                       if (value.trim().length > 2) {
                         _handleSearch(value);
-                      }else{
+                      } else {
                         setState(() => _searchResults = []);
                       }
                     },
@@ -115,8 +116,11 @@ class _ToolsScreenState extends State<ToolsScreen> {
                       color: AppColors.primaryLightText,
                     ),
                     decoration: InputDecoration(
-                    hintStyle: TextStyle(color: AppColors.slateLight),
-                      prefixIcon: const Icon(Icons.search_rounded,color: AppColors.slateLight,),
+                      hintStyle: TextStyle(color: AppColors.slateLight),
+                      prefixIcon: const Icon(
+                        Icons.search_rounded,
+                        color: AppColors.slateLight,
+                      ),
                       hintText: 'Search calcutors (e.g SIP,EMI)',
                       fillColor: AppColors.primaryLight,
                       filled: true,
@@ -141,49 +145,51 @@ class _ToolsScreenState extends State<ToolsScreen> {
             ),
             _searchController.text.isNotEmpty &&
                     _searchController.text.trim().length > 2
-                ? Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: _listSection("Results", _searchResults),
+                ? Column(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.width * 0.20,
+                        child: BannerAdSection(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: _listSection("Results", _searchResults),
+                      ),
+                    ],
                   )
                 : Column(
                     children: [
-                      // Padding(
-                      //   padding: const EdgeInsets.symmetric(
-                      //     vertical: 15,
-                      //     horizontal: 20,
-                      //   ),
-                      //   child:
-                         SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 20,
-                        ),
-                            child: SizedBox(
-                                width: MediaQuery.of(context).size.width+20,
-                              child: Row(
-                                spacing: 10,
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: List.generate(
-                                  _topBarTitles.length,
-                                  (index) => _TopBarItem(
-                                    title: _topBarTitles[index],
-                                    isActive: activeTab == index,
-                                    onTap: () {
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 15,
+                            horizontal: 20,
+                          ),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width + 20,
+                            child: Row(
+                              spacing: 10,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: List.generate(
+                                _topBarTitles.length,
+                                (index) => _TopBarItem(
+                                  title: _topBarTitles[index],
+                                  isActive: activeTab == index,
+                                  onTap: () {
                                     FocusScope.of(context).unfocus();
-                                      setState(() {
-                                        activeTab = index;
-                                      });
-                                    },
-                                  ),
+                                    setState(() {
+                                      activeTab = index;
+                                    });
+                                  },
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      // ),
+                      ),
 
+                      // ),
                       SizedBox(
                         height: 1,
                         width: double.infinity,
@@ -191,9 +197,17 @@ class _ToolsScreenState extends State<ToolsScreen> {
                           color: AppColors.secondaryLightText.withAlpha(80),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: _renderContent(),
+                      Column(
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.width * 0.20,
+                            child: BannerAdSection(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                            child: _renderContent(),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -221,9 +235,9 @@ class _TopBarItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         decoration: BoxDecoration(
-          color: isActive 
-          ? Theme.of(context).colorScheme.primary 
-          : Theme.of(context).colorScheme.onPrimary,
+          color: isActive
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.onPrimary,
           border: Border.all(
             color: isActive
                 ? AppColors.primary
@@ -330,7 +344,7 @@ class _ListItem extends StatelessWidget {
           spacing: 15,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             DecoratedBox(
+            DecoratedBox(
               decoration: BoxDecoration(
                 color: AppColors.secondary.withAlpha(30),
                 borderRadius: BorderRadius.circular(10),
