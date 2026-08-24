@@ -17,7 +17,7 @@ class IntrestitailAdService {
 
     InterstitialAd.load(
       adUnitId: Platform.isIOS
-          ? AdsUnitKey.interstitalAdIdTest
+          ? AdsUnitKey.interstitalAdIdIOS
           : AdsUnitKey.interstitalAdId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(

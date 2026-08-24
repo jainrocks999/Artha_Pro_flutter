@@ -27,7 +27,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Artha',
+                  'Arth',
                   style: TextStyle(
                     color: AppColors.primaryLightText,
                     fontFamily: 'Manrope',

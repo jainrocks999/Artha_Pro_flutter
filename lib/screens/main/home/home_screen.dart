@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:artha_pro_app/core/ads/ad_manager.dart';
 import 'package:artha_pro_app/core/ads/banner_ad.dart';
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/model/tools_data.dart';
@@ -23,6 +26,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int activeTab = 0;
+  final ScrollController _scrollController = ScrollController();
+
+@override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   List<Widget> _renderContent() {
     switch (activeTab) {
@@ -77,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: const AppTopBar(),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           children: [
             Container(
@@ -121,11 +132,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            SizedBox(
-              //  height: 60,
-              height: MediaQuery.of(context).size.width * 0.25,
-              child: BannerAdSection(),
+            if (Platform.isIOS) const SizedBox(height: 20),
+            BannerAdSection(
+              height:
+                  MediaQuery.of(context).size.width *
+                  (Platform.isIOS ? 0.15 : 0.25),
             ),
+            if (Platform.isIOS) const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               child: Wrap(
@@ -165,18 +178,24 @@ class _TopTabItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.only(bottom: 3),
-        margin: const EdgeInsets.only(bottom: 8),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: active ? AppColors.secondary : Colors.transparent,
-              width: 2,
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: active ? AppColors.secondary : Colors.transparent,
+            width: 2,
           ),
+        ),
+      ),
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.fromLTRB(3, 0, 3, 3),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: Row(
           spacing: 6,
@@ -223,63 +242,81 @@ class _ToolsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (type == TaxType.income) {
-          context.push('/tools/incometax', extra: type);
-        } else {
-          context.push(route, extra: type);
-        }
-      },
-      child: Container(
-        width: 200,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onPrimary,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.onSecondary.withAlpha(70),
-            width: 2,
+    void handleNavigation() {
+      AdManager.intrestitail.showAd(
+        onAdDismissed: () {
+          if (!context.mounted) return;
+          if (type == TaxType.income) {
+            context.push('/tools/incometax', extra: type);
+          } else {
+            context.push(route, extra: type);
+          }
+        },
+      );
+    }
+
+    return SizedBox(
+      width: 200,
+      child: ElevatedButton(
+        onPressed: handleNavigation,
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.all(20),
+          backgroundColor: Theme.of(context).colorScheme.onPrimary,
+          foregroundColor: Theme.of(context).colorScheme.surface,
+          elevation: 3,
+          shadowColor: Colors.black45,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusGeometry.circular(20),
+            side: BorderSide(
+              color: Theme.of(context).colorScheme.onSecondary.withAlpha(70),
+              width: 2,
+            ),
           ),
-          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 15)],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withAlpha(30),
-                borderRadius: BorderRadius.circular(10),
+        child: SizedBox(
+          width: 200,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withAlpha(30),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: Icon(
+                    icon,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
               ),
-              child: SizedBox(
-                height: 40,
-                width: 40,
-                child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(height: 12),
+              Text(
+                title.toUpperCase(),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.surface,
+                  fontFamily: 'Manrope',
+                  fontWeight: FontWeight.w900,
+                  fontSize: 15,
+                  letterSpacing: -0.5,
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title.toUpperCase(),
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.surface,
-                fontFamily: 'Manrope',
-                fontWeight: FontWeight.w900,
-                fontSize: 15,
-                letterSpacing: -0.5,
+              Text(
+                shortDes,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.surface,
+                  fontFamily: 'Manrope',
+                  fontWeight: FontWeight.normal,
+                  fontSize: 13,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            Text(
-              shortDes,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.surface,
-                fontFamily: 'Manrope',
-                fontWeight: FontWeight.normal,
-                fontSize: 13,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

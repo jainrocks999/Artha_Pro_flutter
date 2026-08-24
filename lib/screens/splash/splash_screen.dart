@@ -43,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                  const Text(
-                    'Artha',
+                    'Arth',
                     style: TextStyle(
                       color: AppColors.primaryLightText,
                       fontSize: 30,

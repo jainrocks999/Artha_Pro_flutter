@@ -1,5 +1,4 @@
 import 'package:artha_pro_app/core/ads/banner_ad.dart';
-import 'package:artha_pro_app/core/ads/intrestitail_ad_service.dart';
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/model/loan_calculator.dart';
 import 'package:artha_pro_app/core/utils/helper.dart';
@@ -40,13 +39,9 @@ class _LoanCalculatorState extends State<LoanCalculatorScreen> {
   final TextEditingController _processingFeeController =
       TextEditingController();
 
-  final IntrestitailAdService _intrestitailAdService = IntrestitailAdService();
-
   @override
   void initState() {
     super.initState();
-
-    _intrestitailAdService.loadAd();
 
     loanAmount = widget.type.minLoanAmount;
     interestRate = widget.type.minRate;
@@ -55,19 +50,10 @@ class _LoanCalculatorState extends State<LoanCalculatorScreen> {
     _downpaymentController.text = downpayment.toStringAsFixed(0);
     _processingFeeController.text = processingFee.toStringAsFixed(0);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _intrestitailAdService.showAd(
-        onAdDismissed: () {
-          if (!mounted) return;
-        },
-      );
-    });
   }
 
   @override
   void dispose() {
-    _intrestitailAdService.dispose();
     super.dispose();
   }
 
@@ -312,10 +298,7 @@ class _LoanCalculatorState extends State<LoanCalculatorScreen> {
                   }
                 },
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.width * 0.16,
-                child: BannerAdSection(),
-              ),
+              BannerAdSection(height: MediaQuery.of(context).size.width * 0.16),
               showSummary
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(20),

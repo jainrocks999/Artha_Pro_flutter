@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class BannerAdSection extends StatefulWidget {
-  const BannerAdSection({super.key});
+  final double? height;
+  const BannerAdSection({super.key, this.height});
 
   @override
   State<BannerAdSection> createState() => _BannerAdSectionState();
@@ -36,7 +37,7 @@ class _BannerAdSectionState extends State<BannerAdSection> {
 
     final banner = BannerAd(
       adUnitId: Platform.isIOS
-          ? AdsUnitKey.bannerAdIdTest
+          ? AdsUnitKey.bannerAdIdIOS
           : AdsUnitKey.bannerAdId,
       size: adSize,
       request: const AdRequest(),
@@ -84,11 +85,16 @@ class _BannerAdSectionState extends State<BannerAdSection> {
           return const SizedBox.shrink();
         }
 
-        return SizedBox(
-          width: width,
-          height: _bannerAd!.size.height.toDouble(),
-          child: AdWidget(ad: _bannerAd!),
-        );
+        return widget.height == null
+            ? SizedBox.shrink()
+            : SizedBox(
+                height: widget.height,
+                child: SizedBox(
+                  width: width,
+                  height: _bannerAd!.size.height.toDouble(),
+                  child: AdWidget(ad: _bannerAd!),
+                ),
+              );
       },
     );
   }

@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/widgets/app_icon.dart';
 import 'package:artha_pro_app/core/widgets/app_top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});
@@ -24,6 +27,14 @@ class _AboutScreenState extends State<AboutScreen> {
     setState(() {
       appVersion = 'Version ${info.version}';
     });
+  }
+
+  Future<void> openUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -52,7 +63,7 @@ class _AboutScreenState extends State<AboutScreen> {
                   const AppIcon(),
                   const SizedBox(height: 20),
                   Text(
-                    'Artha Pro',
+                    'Arth Pro',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontFamily: 'Manrope',
@@ -61,7 +72,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     ),
                   ),
                   Text(
-                   appVersion,
+                    appVersion,
                     style: TextStyle(
                       color: AppColors.slateLight,
                       fontFamily: 'Manrope',
@@ -101,7 +112,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     ),
                   ),
                   const Text(
-                    'Empowering everyone with premium financial tools for a smarter future. ArthaPro is built to simplify your financial journey with institutional-grade insights and secure management.',
+                    'Empowering everyone with premium financial tools for a smarter future. ArthPro is built to simplify your financial journey with institutional-grade insights and secure management.',
                     style: TextStyle(
                       color: AppColors.slateLight,
                       fontFamily: 'Manrope',
@@ -116,9 +127,18 @@ class _AboutScreenState extends State<AboutScreen> {
             _MenuItem(
               prefixIcon: Icons.support_agent_rounded,
               lable: 'Contact Support',
+              onPress: () => openUrl('https://forebearpro.com/support/'),
             ),
             const SizedBox(height: 15),
-            _MenuItem(prefixIcon: Icons.star_rate_rounded, lable: 'Rate Us'),
+            _MenuItem(
+              prefixIcon: Icons.star_rate_rounded,
+              lable: 'Rate Us',
+              onPress: () => openUrl(
+                Platform.isIOS
+                    ? 'https://forebearpro.com/'
+                    : 'https://play.google.com/store/apps/details?id=com.arthapro.calculator&pcampaignid=web_share',
+              ),
+            ),
             const SizedBox(height: 15),
           ],
         ),
@@ -130,41 +150,54 @@ class _AboutScreenState extends State<AboutScreen> {
 class _MenuItem extends StatelessWidget {
   final IconData prefixIcon;
   final String lable;
-  const _MenuItem({required this.prefixIcon, required this.lable});
+  final VoidCallback? onPress;
+  const _MenuItem({
+    required this.prefixIcon,
+    required this.lable,
+    this.onPress,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onPrimary,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: AppColors.secondaryLightText.withAlpha(70),
-          width: 2,
-        ),
-      ),
-      child: Row(
-        spacing: 10,
-        children: [
-          Icon(prefixIcon, size: 25, color: AppColors.slateLight),
-          Text(
-            lable,
-            style: TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: Theme.of(context).colorScheme.primary,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ElevatedButton(
+        onPressed: onPress,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.onPrimary,
+          foregroundColor: Theme.of(context).colorScheme.primary,
+          elevation: 1,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: AppColors.secondaryLightText.withAlpha(70),
+              width: 0.5,
             ),
           ),
-          const Spacer(),
-          Icon(
-            Icons.chevron_right_rounded,
-            size: 30,
-            color: AppColors.secondaryLightText,
-          ),
-        ],
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Row(
+          spacing: 10,
+          children: [
+            Icon(prefixIcon, size: 25, color: AppColors.slateLight),
+            Text(
+              lable,
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const Spacer(),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 30,
+              color: AppColors.secondaryLightText,
+            ),
+          ],
+        ),
       ),
     );
   }

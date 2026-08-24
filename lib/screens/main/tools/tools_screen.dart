@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:artha_pro_app/core/ads/ad_manager.dart';
 import 'package:artha_pro_app/core/ads/banner_ad.dart';
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/model/tools_data.dart';
@@ -20,6 +22,8 @@ class _ToolsScreenState extends State<ToolsScreen> {
   int activeTab = 0;
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _searchResults = [];
+
+  final ScrollController _scrollController = ScrollController();
 
   Widget _renderContent() {
     switch (activeTab) {
@@ -65,6 +69,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _searchController.dispose();
     _searchResults.clear();
     super.dispose();
@@ -75,6 +80,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
     return Scaffold(
       appBar: const AppTopBar(),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -147,9 +153,9 @@ class _ToolsScreenState extends State<ToolsScreen> {
                     _searchController.text.trim().length > 2
                 ? Column(
                     children: [
-                      SizedBox(
+                      if (Platform.isIOS) const SizedBox(height: 20),
+                      BannerAdSection(
                         height: MediaQuery.of(context).size.width * 0.20,
-                        child: BannerAdSection(),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(20),
@@ -199,9 +205,9 @@ class _ToolsScreenState extends State<ToolsScreen> {
                       ),
                       Column(
                         children: [
-                          SizedBox(
+                          if (Platform.isIOS) const SizedBox(height: 15),
+                          BannerAdSection(
                             height: MediaQuery.of(context).size.width * 0.20,
-                            child: BannerAdSection(),
                           ),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
@@ -311,83 +317,92 @@ class _ListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     void handleNavigation() {
       FocusScope.of(context).unfocus();
-      if (type is InvestmentType) {
-        context.push('/tools/investment', extra: type);
-      } else if (type is LoanType) {
-        context.push('/tools/loan', extra: type);
-      } else if (type is TaxType) {
-        switch (type) {
-          case TaxType.gst:
-            context.push('/tools/tax', extra: type);
-            break;
-          case TaxType.income:
-            context.push('/tools/incometax', extra: type);
-            break;
-        }
-      }
+
+      AdManager.intrestitail.showAd(
+        onAdDismissed: () {
+          if (!context.mounted) return;
+          if (type is InvestmentType) {
+            context.push('/tools/investment', extra: type);
+          } else if (type is LoanType) {
+            context.push('/tools/loan', extra: type);
+          } else if (type is TaxType) {
+            switch (type) {
+              case TaxType.gst:
+                context.push('/tools/tax', extra: type);
+                break;
+              case TaxType.income:
+                context.push('/tools/incometax', extra: type);
+                break;
+            }
+          }
+        },
+      );
     }
 
-    return GestureDetector(
-      onTap: handleNavigation,
-      child: Container(
+    return ElevatedButton(
+      onPressed: handleNavigation,
+      style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
+        foregroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 3,
+        // shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
+          side: BorderSide(
             color: Theme.of(context).colorScheme.onSecondary.withAlpha(70),
-            width: 2,
+            width: 0.5,
           ),
-          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 15)],
         ),
-        child: Row(
-          spacing: 15,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.secondary.withAlpha(30),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: SizedBox(
-                height: 50,
-                width: 50,
-                child: Icon(icon, color: AppColors.secondary, size: 28),
-              ),
+      ),
+      child: Row(
+        spacing: 15,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.secondary.withAlpha(30),
+              borderRadius: BorderRadius.circular(10),
             ),
-
-            Expanded(
-              child: Column(
-                spacing: 3,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.surface,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-
-                  Text(
-                    shortDes,
-                    style: const TextStyle(
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 13,
-                      color: AppColors.slateLight,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: Icon(icon, color: AppColors.secondary, size: 28),
             ),
-          ],
-        ),
+          ),
+
+          Expanded(
+            child: Column(
+              spacing: 3,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                    color: Theme.of(context).colorScheme.surface,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+
+                Text(
+                  shortDes,
+                  style: const TextStyle(
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w500,
+                    fontSize: 13,
+                    color: AppColors.slateLight,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

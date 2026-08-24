@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:artha_pro_app/core/ads/banner_ad.dart';
-import 'package:artha_pro_app/core/ads/intrestitail_ad_service.dart';
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/model/investment.calculator.dart';
 import 'package:artha_pro_app/core/utils/helper.dart';
@@ -37,8 +38,6 @@ class _SipCalculatorScreenState extends State<SipCalculatorScreen> {
   bool showSummary = false;
   bool isError = false;
 
-  final IntrestitailAdService _intrestitailAdService = IntrestitailAdService();
-
   final NumberFormat _currencyFormat = NumberFormat.currency(
     locale: 'en_IN',
     symbol: '₹',
@@ -62,7 +61,6 @@ class _SipCalculatorScreenState extends State<SipCalculatorScreen> {
   @override
   void initState() {
     super.initState();
-    _intrestitailAdService.loadAd();
 
     monthlyInvestment = widget.type.minAmount;
     annualReturnRate = widget.type.defaultRate;
@@ -75,19 +73,10 @@ class _SipCalculatorScreenState extends State<SipCalculatorScreen> {
     _annualIncreaseSalaryController.text = annualIncreaseSalary.toStringAsFixed(
       0,
     );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _intrestitailAdService.showAd(
-        onAdDismissed: () {
-          if (!mounted) return;
-        },
-      );
-    });
   }
 
   @override
   void dispose() {
-    _intrestitailAdService.dispose();
     super.dispose();
   }
 
@@ -474,11 +463,9 @@ class _SipCalculatorScreenState extends State<SipCalculatorScreen> {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: CalculateBtn(title: 'Calculate', onPressed: _calculate),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.width * 0.20,
-              child: BannerAdSection(),
-            ),
-            const SizedBox(height: 6),
+            if (Platform.isIOS) const SizedBox(height: 10),
+            BannerAdSection(height: MediaQuery.of(context).size.width * 0.20),
+            SizedBox(height: Platform.isIOS ? 16 : 6),
             showSummary
                 ? Container(
                     padding: const EdgeInsets.all(15),

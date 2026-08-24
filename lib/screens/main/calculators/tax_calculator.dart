@@ -1,5 +1,4 @@
 import 'package:artha_pro_app/core/ads/banner_ad.dart';
-import 'package:artha_pro_app/core/ads/intrestitail_ad_service.dart';
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:artha_pro_app/core/utils/helper.dart';
 import 'package:artha_pro_app/core/utils/tax_type.dart';
@@ -33,8 +32,6 @@ class _TaxCalculatorScreenState extends State<TaxCalculatorScreen> {
   double grossAmount = 0;
   double cgst = 0;
   double sgst = 0;
-
-  final IntrestitailAdService _intrestitailAdService = IntrestitailAdService();
 
   String formatRate(double rate) {
     if (rate % 1 == 0) {
@@ -74,16 +71,6 @@ class _TaxCalculatorScreenState extends State<TaxCalculatorScreen> {
   @override
   void initState() {
     super.initState();
-    _intrestitailAdService.loadAd();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _intrestitailAdService.showAd(
-        onAdDismissed: () {
-          if (!mounted) return;
-        },
-      );
-    });
 
     amountController = TextEditingController(
       text: transactionAmount.toInt().toString(),
@@ -93,7 +80,6 @@ class _TaxCalculatorScreenState extends State<TaxCalculatorScreen> {
 
   @override
   void dispose() {
-    _intrestitailAdService.dispose();
     amountController.dispose();
     super.dispose();
   }
@@ -253,10 +239,7 @@ class _TaxCalculatorScreenState extends State<TaxCalculatorScreen> {
                 ],
               ),
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.width * 0.16,
-              child: BannerAdSection(),
-            ),
+            BannerAdSection(height: MediaQuery.of(context).size.width * 0.16),
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Stack(
