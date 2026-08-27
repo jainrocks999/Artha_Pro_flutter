@@ -275,7 +275,7 @@ class _ToolsItem extends StatelessWidget {
           ),
         ),
         child: SizedBox(
-          width: 200,
+          width: double.infinity,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

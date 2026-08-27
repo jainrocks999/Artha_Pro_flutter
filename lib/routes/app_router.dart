@@ -7,6 +7,7 @@ import 'package:artha_pro_app/screens/main/calculators/loan_calculator.dart';
 import 'package:artha_pro_app/screens/main/calculators/sip_calculator.dart';
 import 'package:artha_pro_app/screens/main/calculators/tax_calculator.dart';
 import 'package:artha_pro_app/screens/main/home/home_screen.dart';
+import 'package:artha_pro_app/screens/main/howitworks/how_it_works.dart';
 import 'package:artha_pro_app/screens/main/main_screen.dart';
 import 'package:artha_pro_app/screens/main/tools/tools_screen.dart';
 import 'package:artha_pro_app/screens/splash/splash_screen.dart';
@@ -45,6 +46,12 @@ final route = GoRouter(
       builder: (context, state) {
         final type = state.extra as TaxType;
         return IncomeTaxCalculatorscreen(type: type);
+      },
+    ),
+    GoRoute(
+      path: '/home/howItworks',
+      builder: (context, state) {
+        return HowItWorksScreen();
       },
     ),
     StatefulShellRoute.indexedStack(

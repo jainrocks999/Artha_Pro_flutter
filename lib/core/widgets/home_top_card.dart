@@ -1,6 +1,8 @@
 import 'package:artha_pro_app/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+
 
 class HomeTopCard extends StatelessWidget {
   const HomeTopCard({super.key});
@@ -98,7 +100,9 @@ class HomeTopCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      context.push('/tools');
+                    },
                     child: const Text(
                       'Expore All',
                       style: TextStyle(
@@ -125,7 +129,9 @@ class HomeTopCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                        context.push('/home/howItworks');
+                    },
                     child: const Text(
                       'How it works',
                       style: TextStyle(
